@@ -78,11 +78,48 @@
 
     /* Range */
     input[type=range] {
-      width: 100%; accent-color: #FF6B00;
+      width: 100%;
       margin-bottom: 6px;
-      height: 6px;
-      filter: drop-shadow(0 0 3px rgba(255,107,0,0.6));
       cursor: pointer;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 6px;
+      border-radius: 3px;
+      outline: none;
+      background: linear-gradient(to right, #FF6B00 0%, #FF6B00 50%, #E0E0E0 50%, #E0E0E0 100%);
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      background: #FF6B00;
+      cursor: pointer;
+      border: 3px solid #fff;
+      box-shadow: 0 0 0 1.5px #FF6B00, 0 0 8px rgba(255,107,0,0.5);
+      margin-top: -9px;
+    }
+    input[type=range]::-moz-range-thumb {
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      background: #FF6B00;
+      cursor: pointer;
+      border: 3px solid #fff;
+      box-shadow: 0 0 0 1.5px #FF6B00, 0 0 8px rgba(255,107,0,0.5);
+    }
+    input[type=range]::-webkit-slider-runnable-track {
+      height: 6px;
+      border-radius: 3px;
+    }
+    input[type=range]::-moz-range-track {
+      height: 6px;
+      border-radius: 3px;
+      background: #E0E0E0;
+    }
+    input[type=range]::-moz-range-progress {
+      height: 6px;
+      border-radius: 3px;
+      background: #FF6B00;
     }
     .range-labels {
       display: flex; justify-content: space-between;
@@ -183,11 +220,13 @@
     td { padding: 11px 8px; }
     tbody tr { border-bottom: 1px solid #F0F0F0; cursor: pointer; }
     tbody tr:hover { background: #FFF8F0 !important; }
-    .bar-wrap { display: flex; align-items: center; gap: 5px; }
-    .bar-bg { flex: 1; background: #F0F0F0; border-radius: 4px; height: 8px; min-width: 30px; }
+    .bar-wrap { display: flex; flex-direction: column; gap: 3px; width: 100%; }
+    .bar-row { display: flex; align-items: center; gap: 6px; }
+    .bar-bg { flex: 1; background: #F0F0F0; border-radius: 4px; height: 8px; }
     .bar-fill { height: 100%; border-radius: 4px; transition: width 0.3s; }
+    .bar-label { display: flex; align-items: center; gap: 4px; font-size: 13px; }
     .max-badge {
-      margin-left: 3px; font-size: 10px;
+      font-size: 10px;
       background: #FF6B00; color: #fff;
       border-radius: 3px; padding: 1px 5px;
     }
@@ -235,7 +274,7 @@
       国民年金（基礎年金）加入年数：<strong id="nenkin-years-label" style="color:#FF6B00">35年</strong>
       <span class="label-note" id="nenkin-pct">満額の95%</span>
     </div>
-    <input type="range" id="nenkin-years" min="1" max="40" value="35" oninput="update()">
+    <input type="range" id="nenkin-years" min="1" max="40" value="35" oninput="updateSliderFill(this);update()">
     <div class="range-labels"><span>1年</span><span>40年（満額）</span></div>
 
     <div class="kosei-section" id="kosei-section">
@@ -243,7 +282,7 @@
         厚生年金 平均月収（総支給額・ボーナス除く）：<strong id="salary-label" style="color:#FF6B00">28万円</strong>
         <span class="label-badge" id="salary-badge">💼 全国平均的なサラリーマン</span>
       </div>
-      <input type="range" id="avg-salary" min="10" max="65" value="28" oninput="update()">
+      <input type="range" id="avg-salary" min="10" max="65" value="28" oninput="updateSliderFill(this);update()">
       <div class="range-labels">
         <span>10万円</span><span class="mid">▲平均33万円</span><span>65万円（上限）</span>
       </div>
@@ -258,7 +297,7 @@
       </a>
 
       <div class="label">厚生年金 加入年数：<strong id="kousei-years-label" style="color:#FF6B00">30年</strong></div>
-      <input type="range" id="kousei-years" min="1" max="42" value="30" oninput="update()">
+      <input type="range" id="kousei-years" min="1" max="42" value="30" oninput="updateSliderFill(this);update()">
       <div class="range-labels"><span>1年</span><span>42年</span></div>
     </div>
 
@@ -266,7 +305,7 @@
       受給開始年齢：<strong id="start-age-label" style="color:#FF6B00">65歳</strong>
       <span id="start-age-note" style="font-size:11px;margin-left:6px;"></span>
     </div>
-    <input type="range" id="start-age" min="60" max="75" value="65" oninput="update()">
+    <input type="range" id="start-age" min="60" max="75" value="65" oninput="updateSliderFill(this);update()">
     <div class="range-labels"><span>60歳（繰上げ最大）</span><span>75歳（繰下げ最大）</span></div>
   </div>
 
@@ -495,12 +534,15 @@ function update() {
       </td>
       <td style="padding:8px 10px">
         <div class="bar-wrap">
-          <div class="bar-bg">
-            <div class="bar-fill" style="width:${pct}%;background:${barColor}"></div>
+          <div class="bar-row">
+            <div class="bar-bg">
+              <div class="bar-fill" style="width:${pct}%;background:${barColor}"></div>
+            </div>
           </div>
-          <span style="font-size:14px;font-weight:${fw};color:${tdColor};white-space:nowrap">
-            ${total.toLocaleString()}万${isMax?'<span class="max-badge">最大</span>':''}
-          </span>
+          <div class="bar-label" style="font-weight:${fw};color:${tdColor}">
+            ${total.toLocaleString()}万円
+            ${isMax?'<span class="max-badge">最大</span>':''}
+          </div>
         </div>
       </td>
       <td style="padding:8px 10px;color:#888">${be2 ? be2+'歳' : '−'}</td>
@@ -534,8 +576,13 @@ function drawGraph(selectedSa, life, base65Annual) {
     return Math.round(Math.max(0, (a - sa) * 12) * m / 10000);
   });
 
-  const allVals = lineConfigs.flatMap(c => getVals(c.sa));
-  const maxVal = Math.max(...allVals) || 1;
+  // Y軸上限は「想定寿命時点の各ラインの値」で決める（全期間の最大にすると線がつぶれる）
+  const lifeValsByLine = lineConfigs.map(c => {
+    const vals = getVals(c.sa);
+    const lifeI = ages.indexOf(life);
+    return lifeI >= 0 ? vals[lifeI] : 0;
+  });
+  const maxVal = Math.max(...lifeValsByLine, 1);
 
   const xPos = (i) => padL + (i / (ages.length - 1)) * innerW;
   const yPos = (v) => padT + innerH - (v / maxVal) * innerH;
@@ -587,10 +634,25 @@ function drawGraph(selectedSa, life, base65Annual) {
 // life age helper
 function updateLifeAge(v) {
   document.getElementById('life-age-val').textContent = v + '歳';
+  updateSliderFill(document.getElementById('life-age-slider'));
   update();
 }
 
+// スライダーの塗り進捗を更新
+function updateSliderFill(slider) {
+  const min = +slider.min || 0;
+  const max = +slider.max || 100;
+  const val = +slider.value;
+  const pct = Math.round((val - min) / (max - min) * 100);
+  slider.style.background = `linear-gradient(to right, #FF6B00 0%, #FF6B00 ${pct}%, #E0E0E0 ${pct}%, #E0E0E0 100%)`;
+}
+
+function updateAllSliders() {
+  document.querySelectorAll('input[type=range]').forEach(updateSliderFill);
+}
+
 // init
+updateAllSliders();
 update();
 </script>
 </body>
