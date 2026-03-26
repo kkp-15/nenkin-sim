@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>年金シミュレーター｜自分の年金、月いくら？</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+      background: #F5F5F5;
+      min-height: 100vh;
+      padding: 16px 12px 40px;
+      color: #1A1A1A;
+      font-size: 16px; /* ベースを16pxに（スマホのズーム防止） */
+    }
+    .wrap { max-width: 600px; margin: 0 auto; }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, #FF6B00 0%, #FF9500 100%);
+      border-radius: 16px;
+      padding: 20px 18px 18px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 20px rgba(255,107,0,0.3);
+    }
+    .header-label { font-size: 11px; color: rgba(255,255,255,0.8); letter-spacing: 2px; margin-bottom: 4px; }
+    .header-title { font-size: 26px; font-weight: 900; color: #fff; line-height: 1.3; }
+    .header-sub { font-size: 13px; color: rgba(255,255,255,0.75); margin-top: 8px; }
+
+    /* Card */
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 18px 16px;
+      margin-bottom: 14px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+
+    /* Section title */
+    .section-title {
+      font-size: 15px; font-weight: 700; color: #1A1A1A;
+      margin-bottom: 14px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .section-title::before {
+      content: ''; display: inline-block;
+      width: 4px; height: 16px;
+      background: #FF6B00; border-radius: 2px; flex-shrink: 0;
+    }
+
+    /* Label */
+    .label { font-size: 14px; font-weight: 600; color: #1A1A1A; margin-bottom: 8px; line-height: 1.6; }
+    .label-note { font-size: 12px; color: #888; margin-left: 6px; font-weight: 400; }
+    .label-badge {
+      display: inline-block; margin-left: 0; margin-top: 4px;
+      font-size: 12px; background: #FFF3E8; color: #FF6B00;
+      border-radius: 6px; padding: 3px 8px; font-weight: 600;
+    }
+
+    /* Type buttons */
+    .type-btns { display: flex; gap: 8px; margin-bottom: 16px; }
+    .type-btn {
+      flex: 1; padding: 13px 4px; border-radius: 10px;
+      border: 2px solid #E0E0E0; background: #fff;
+      color: #aaa; font-weight: 400; font-size: 13px;
+      cursor: pointer; transition: all 0.2s;
+      font-family: inherit; line-height: 1.3;
+    }
+    .type-btn.active {
+      border-color: #FF6B00;
+      background: #fff;
+      color: #FF6B00; font-weight: 700;
+      box-shadow: 0 0 8px rgba(255,107,0,0.5), 0 0 20px rgba(255,107,0,0.2), inset 0 0 8px rgba(255,107,0,0.05);
+      text-shadow: 0 0 8px rgba(255,107,0,0.8);
+    }
+
+    /* Range */
+    input[type=range] {
+      width: 100%; accent-color: #FF6B00;
+      margin-bottom: 6px;
+      height: 6px;
+      filter: drop-shadow(0 0 3px rgba(255,107,0,0.6));
+      cursor: pointer;
+    }
+    .range-labels {
+      display: flex; justify-content: space-between;
+      font-size: 12px; color: #888; margin-bottom: 16px;
+    }
+    .range-labels .mid { color: #FF6B00; }
+
+    /* Quick buttons */
+    .quick-btns { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+    .quick-btn {
+      padding: 8px 14px; border-radius: 8px;
+      border: 1.5px solid #E0E0E0; background: #fff;
+      color: #aaa; font-size: 13px; font-weight: 400;
+      cursor: pointer; font-family: inherit; transition: all 0.2s;
+      min-height: 40px;
+    }
+    .quick-btn.active {
+      border-color: #FF6B00; background: #fff;
+      color: #FF6B00; font-weight: 700;
+      box-shadow: 0 0 6px rgba(255,107,0,0.5), 0 0 14px rgba(255,107,0,0.15);
+      text-shadow: 0 0 6px rgba(255,107,0,0.7);
+    }
+
+    /* Nenkin link */
+    .nenkin-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 13px; color: #FF6B00; font-weight: 600;
+      background: #fff; border-radius: 8px; padding: 11px 16px;
+      text-decoration: none; margin-bottom: 16px;
+      border: 1.5px solid #FF6B00;
+      box-shadow: 0 0 6px rgba(255,107,0,0.35), 0 0 14px rgba(255,107,0,0.1);
+      transition: all 0.2s; min-height: 44px; width: 100%;
+      justify-content: center;
+    }
+    .nenkin-link:hover {
+      box-shadow: 0 0 10px rgba(255,107,0,0.6), 0 0 24px rgba(255,107,0,0.2);
+      text-shadow: 0 0 6px rgba(255,107,0,0.7);
+    }
+
+    /* Result card */
+    .result-card {
+      background: linear-gradient(135deg, #FF6B00 0%, #FF9500 100%);
+      border-radius: 16px; padding: 20px; margin-bottom: 16px;
+      box-shadow: 0 4px 20px rgba(255,107,0,0.25);
+    }
+    .result-subtitle { color: rgba(255,255,255,0.85); font-size: 13px; margin-bottom: 6px; }
+    .result-main { color: #fff; font-size: 32px; font-weight: 900; line-height: 1; }
+    .result-main span { font-size: 44px; }
+    .result-annual { color: rgba(255,255,255,0.85); font-size: 14px; margin-top: 8px; display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+    .result-badge {
+      background: rgba(255,255,255,0.2);
+      border-radius: 6px; padding: 3px 10px; font-size: 13px;
+    }
+    .mini-cards { margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
+    .mini-card {
+      background: rgba(255,255,255,0.18); border-radius: 10px;
+      padding: 8px 12px; flex: 1; min-width: 80px;
+    }
+    .mini-card.highlight {
+      background: rgba(255,255,255,0.3);
+      border: 1.5px solid rgba(255,255,255,0.6);
+    }
+    .mini-card-label { font-size: 11px; color: rgba(255,255,255,0.8); margin-bottom: 2px; }
+    .mini-card-value { font-size: 14px; font-weight: 700; color: #fff; }
+    .mini-card.highlight .mini-card-value { font-size: 16px; }
+    .breakeven-note {
+      margin-top: 12px; background: rgba(255,255,255,0.15);
+      border-radius: 10px; padding: 10px 12px;
+      font-size: 13px; color: #fff; line-height: 1.6;
+    }
+
+    /* Table header row */
+    .table-header-row {
+      display: flex; align-items: center;
+      justify-content: space-between; margin-bottom: 14px;
+      flex-wrap: wrap; gap: 8px;
+    }
+    .life-select {
+      display: flex; align-items: center; gap: 6px;
+    }
+    .life-select span { font-size: 12px; color: #888; }
+    .life-select-wrap { display: flex; align-items: center; gap: 8px; }
+    .life-select-wrap span { font-size: 12px; color: #888; white-space: nowrap; }
+    .life-age-val {
+      font-size: 15px; font-weight: 700; color: #FF6B00; min-width: 46px;
+      text-shadow: 0 0 6px rgba(255,107,0,0.7);
+    }
+    #life-age-slider {
+      width: 110px; accent-color: #FF6B00;
+      filter: drop-shadow(0 0 3px rgba(255,107,0,0.6));
+      cursor: pointer;
+    }
+
+    /* Table */
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    thead tr { border-bottom: 2px solid #FF6B00; }
+    th { padding: 10px 8px; text-align: left; font-size: 13px; color: #FF6B00; font-weight: 700; }
+    td { padding: 11px 8px; }
+    tbody tr { border-bottom: 1px solid #F0F0F0; cursor: pointer; }
+    tbody tr:hover { background: #FFF8F0 !important; }
+    .bar-wrap { display: flex; align-items: center; gap: 5px; }
+    .bar-bg { flex: 1; background: #F0F0F0; border-radius: 4px; height: 8px; min-width: 30px; }
+    .bar-fill { height: 100%; border-radius: 4px; transition: width 0.3s; }
+    .max-badge {
+      margin-left: 3px; font-size: 10px;
+      background: #FF6B00; color: #fff;
+      border-radius: 3px; padding: 1px 5px;
+    }
+    .note { font-size: 12px; color: #888; margin-top: 10px; line-height: 1.6; }
+
+    /* Graph */
+    .graph-note { font-size: 12px; color: #888; margin-bottom: 8px; }
+    .graph-wrap { overflow-x: auto; }
+    svg { display: block; width: 100%; max-width: 540px; }
+
+    /* Footer note */
+    .footer-note {
+      background: #FFF8F0; border: 1px solid #FFB366;
+      border-radius: 12px; padding: 16px;
+      font-size: 12px; color: #8B5E00; line-height: 1.8;
+    }
+
+    /* Kosei section */
+    .kosei-section { display: block; }
+    .kosei-section.hidden { display: none; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-label">🏦 年金シミュレーター</div>
+    <div class="header-title">自分の年金、月いくら？</div>
+    <div class="header-sub">老後の収入を、数字で確認しよう</div>
+  </div>
+
+  <!-- 入力 -->
+  <div class="card">
+    <div class="section-title">① あなたの情報を入力</div>
+
+    <div class="label">職業タイプ</div>
+    <div class="type-btns">
+      <button class="type-btn active" data-type="company" onclick="setType('company')">会社員</button>
+      <button class="type-btn" data-type="self" onclick="setType('self')">自営業・フリー</button>
+      <button class="type-btn" data-type="both" onclick="setType('both')">両方経験あり</button>
+    </div>
+
+    <div class="label">
+      国民年金（基礎年金）加入年数：<strong id="nenkin-years-label" style="color:#FF6B00">35年</strong>
+      <span class="label-note" id="nenkin-pct">満額の95%</span>
+    </div>
+    <input type="range" id="nenkin-years" min="1" max="40" value="35" oninput="update()">
+    <div class="range-labels"><span>1年</span><span>40年（満額）</span></div>
+
+    <div class="kosei-section" id="kosei-section">
+      <div class="label">
+        厚生年金 平均月収（総支給額・ボーナス除く）：<strong id="salary-label" style="color:#FF6B00">28万円</strong>
+        <span class="label-badge" id="salary-badge">💼 全国平均的なサラリーマン</span>
+      </div>
+      <input type="range" id="avg-salary" min="10" max="65" value="28" oninput="update()">
+      <div class="range-labels">
+        <span>10万円</span><span class="mid">▲平均33万円</span><span>65万円（上限）</span>
+      </div>
+      <div class="quick-btns">
+        <button class="quick-btn" onclick="setSalary(15)">パート 15万</button>
+        <button class="quick-btn" onclick="setSalary(24)">一般職 24万</button>
+        <button class="quick-btn" onclick="setSalary(33)">平均 33万</button>
+        <button class="quick-btn" onclick="setSalary(45)">管理職 45万</button>
+      </div>
+      <a href="https://www.nenkin.go.jp/n_net/" target="_blank" rel="noopener noreferrer" class="nenkin-link">
+        🔍 自分の標準報酬月額をねんきんネットで確認する →
+      </a>
+
+      <div class="label">厚生年金 加入年数：<strong id="kousei-years-label" style="color:#FF6B00">30年</strong></div>
+      <input type="range" id="kousei-years" min="1" max="42" value="30" oninput="update()">
+      <div class="range-labels"><span>1年</span><span>42年</span></div>
+    </div>
+
+    <div class="label">
+      受給開始年齢：<strong id="start-age-label" style="color:#FF6B00">65歳</strong>
+      <span id="start-age-note" style="font-size:11px;margin-left:6px;"></span>
+    </div>
+    <input type="range" id="start-age" min="60" max="75" value="65" oninput="update()">
+    <div class="range-labels"><span>60歳（繰上げ最大）</span><span>75歳（繰下げ最大）</span></div>
+  </div>
+
+  <!-- 結果カード -->
+  <div class="result-card">
+    <div class="result-subtitle" id="result-subtitle">65歳から受け取ると…</div>
+    <div class="result-main">月 <span id="result-monthly">0</span> 円</div>
+    <div class="result-annual">
+      年間 <span id="result-annual">0</span>円
+      <span class="result-badge" id="result-badge">±0%（基準）</span>
+    </div>
+    <div class="mini-cards">
+      <div class="mini-card" id="mc-basic">
+        <div class="mini-card-label">基礎年金</div>
+        <div class="mini-card-value" id="mc-basic-val">—</div>
+      </div>
+      <div class="mini-card" id="mc-kousei">
+        <div class="mini-card-label">厚生年金</div>
+        <div class="mini-card-value" id="mc-kousei-val">—</div>
+      </div>
+      <div class="mini-card highlight">
+        <div class="mini-card-label" id="mc-total-label">〜85歳 累計</div>
+        <div class="mini-card-value" id="mc-total-val">—</div>
+      </div>
+    </div>
+    <div class="breakeven-note" id="breakeven-note" style="display:none"></div>
+  </div>
+
+  <!-- 比較テーブル -->
+  <div class="card">
+    <div class="table-header-row">
+      <div class="section-title" style="margin-bottom:0">② 受給開始年齢 比較表</div>
+      <div class="life-select-wrap">
+        <span>想定寿命</span>
+        <input type="range" id="life-age-slider" min="65" max="120" value="85" oninput="updateLifeAge(this.value)">
+        <span class="life-age-val" id="life-age-val">85歳</span>
+      </div>
+    </div>
+    <div style="overflow-x:auto">
+      <table>
+        <thead>
+          <tr>
+            <th>開始</th>
+            <th>月額</th>
+            <th id="th-total">85歳まで累計</th>
+            <th>損益分岐</th>
+          </tr>
+        </thead>
+        <tbody id="table-body"></tbody>
+      </table>
+    </div>
+    <div class="note">※ 行をタップして受給開始年齢を選択。累計は想定寿命まで生存した場合の概算。</div>
+  </div>
+
+  <!-- グラフ -->
+  <div class="card">
+    <div class="section-title">③ 累計受給額グラフ（万円）</div>
+    <div class="graph-note" id="graph-note">オレンジ縦線 = 想定寿命 85歳</div>
+    <div class="graph-wrap">
+      <svg id="graph-svg" viewBox="0 0 540 220"></svg>
+    </div>
+  </div>
+
+  <!-- 注意書き -->
+  <div class="footer-note">
+    <strong>⚠️ 計算について</strong><br>
+    本シミュレーターは概算です。実際の年金額は日本年金機構の「<a href="https://www.nenkin.go.jp/n_net/" target="_blank" style="color:#FF6B00">ねんきんネット</a>」や「ねんきん定期便」でご確認ください。<br>
+    老齢基礎年金満額は2024年度の795,000円を使用。厚生年金は報酬比例部分の簡易計算です。標準報酬月額は総支給額（ボーナス除く）の目安です。
+  </div>
+
+</div>
+
+<script>
+const ORANGE = "#FF6B00";
+const ORANGE_LIGHT = "#FFF3E8";
+const ORANGE_MID = "#FFB366";
+
+let currentType = "company";
+
+function getAdjRate(sa) {
+  if (sa < 65) return 1 - (65 - sa) * 12 * 0.004;
+  if (sa > 65) return 1 + (sa - 65) * 12 * 0.007;
+  return 1;
+}
+
+function breakEven(sa, base65Monthly) {
+  if (sa === 65) return null;
+  const adjMonthly = base65Monthly * getAdjRate(sa);
+  for (let age = Math.min(sa, 65); age <= 95; age++) {
+    const yf = age - sa, y65 = age - 65;
+    if (yf < 0 || y65 < 0) continue;
+    if (adjMonthly * 12 * yf >= base65Monthly * 12 * y65) return age;
+  }
+  return null;
+}
+
+function totalReceived(sa, until, base65Annual) {
+  const monthly = (base65Annual * getAdjRate(sa)) / 12;
+  return Math.round(monthly * Math.max(0, (until - sa) * 12) / 10000);
+}
+
+function salaryBadge(v) {
+  if (v <= 18) return "🏪 パート・アルバイト水準";
+  if (v <= 25) return "📦 サービス・製造業の一般職";
+  if (v <= 33) return "💼 全国平均的なサラリーマン";
+  if (v <= 41) return "🏢 中堅〜大手会社員";
+  if (v <= 53) return "📊 管理職・専門職";
+  return "🏆 高収入・役員クラス";
+}
+
+function setType(t) {
+  currentType = t;
+  document.querySelectorAll('.type-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.type === t);
+  });
+  document.getElementById('kosei-section').classList.toggle('hidden', t === 'self');
+  document.getElementById('mc-kousei').style.display = t === 'self' ? 'none' : 'flex';
+  update();
+}
+
+function setSalary(v) {
+  document.getElementById('avg-salary').value = v;
+  document.querySelectorAll('.quick-btn').forEach(b => {
+    b.classList.toggle('active', b.textContent.includes(v + '万'));
+  });
+  update();
+}
+
+function update() {
+  const nenkin = +document.getElementById('nenkin-years').value;
+  const salary = +document.getElementById('avg-salary').value;
+  const kousei = +document.getElementById('kousei-years').value;
+  const sa = +document.getElementById('start-age').value;
+  const life = +document.getElementById('life-age-slider').value;
+
+  // labels
+  document.getElementById('nenkin-years-label').textContent = nenkin + '年';
+  document.getElementById('nenkin-pct').textContent = nenkin >= 40 ? '✅ 満額' : `満額の${Math.round(nenkin/40*100)}%`;
+  document.getElementById('salary-label').textContent = salary + '万円';
+  document.getElementById('salary-badge').textContent = salaryBadge(salary);
+  document.getElementById('kousei-years-label').textContent = kousei + '年';
+  document.getElementById('start-age-label').textContent = sa + '歳';
+
+  // quick btn highlight
+  document.querySelectorAll('.quick-btn').forEach(b => {
+    b.classList.toggle('active', b.textContent.includes(salary + '万'));
+  });
+
+  const note = document.getElementById('start-age-note');
+  if (sa < 65) { note.textContent = `▼繰上げ（${((65-sa)*12*0.4).toFixed(1)}%減額）`; note.style.color = '#E74C3C'; }
+  else if (sa > 65) { note.textContent = `▲繰下げ（${((sa-65)*12*0.7).toFixed(1)}%増額）`; note.style.color = '#27AE60'; }
+  else { note.textContent = ''; }
+
+  // calc
+  const basicAnnual = Math.round(795000 * nenkin / 40);
+  const kouseiAnnual = currentType === 'self' ? 0 : Math.round(salary * 10000 * 5.481 / 1000 * kousei * 12);
+  const base65Annual = basicAnnual + kouseiAnnual;
+  const base65Monthly = Math.round(base65Annual / 12);
+
+  const adjRate = getAdjRate(sa);
+  const selAnnual = Math.round(base65Annual * adjRate);
+  const selMonthly = Math.round(selAnnual / 12);
+  const diffPct = Math.round((adjRate - 1) * 1000) / 10;
+  const selTotal = totalReceived(sa, life, base65Annual);
+
+  // result card
+  document.getElementById('result-subtitle').textContent = `${sa}歳から受け取ると…`;
+  document.getElementById('result-monthly').textContent = selMonthly.toLocaleString();
+  document.getElementById('result-annual').textContent = selAnnual.toLocaleString();
+  const bdg = document.getElementById('result-badge');
+  bdg.textContent = (diffPct > 0 ? `+${diffPct}%` : `${diffPct}%`) + (sa === 65 ? '（基準）' : '');
+
+  document.getElementById('mc-basic-val').textContent = `${Math.round(basicAnnual * adjRate / 12).toLocaleString()}円/月`;
+  document.getElementById('mc-kousei-val').textContent = `${Math.round(kouseiAnnual * adjRate / 12).toLocaleString()}円/月`;
+  document.getElementById('mc-total-label').textContent = `〜${life}歳 累計`;
+  document.getElementById('mc-total-val').textContent = `約${selTotal.toLocaleString()}万円`;
+
+  const be = breakEven(sa, base65Monthly);
+  const ben = document.getElementById('breakeven-note');
+  if (be && sa !== 65) {
+    ben.style.display = 'block';
+    ben.innerHTML = `💡 65歳受給より <strong>${be}歳</strong> で累計受給額が逆転します`;
+  } else {
+    ben.style.display = 'none';
+  }
+
+  // table
+  document.getElementById('th-total').textContent = `${life}歳まで累計`;
+  document.getElementById('graph-note').textContent = `オレンジ縦線 = 想定寿命 ${life}歳`;
+
+  const rows = [];
+  let maxTotal = 0;
+  for (let a = 60; a <= 75; a++) {
+    const total = totalReceived(a, life, base65Annual);
+    if (total > maxTotal) maxTotal = total;
+  }
+
+  const tbody = document.getElementById('table-body');
+  tbody.innerHTML = '';
+  for (let a = 60; a <= 75; a++) {
+    const r = getAdjRate(a);
+    const monthly = Math.round(base65Annual * r / 12);
+    const total = totalReceived(a, life, base65Annual);
+    const be2 = breakEven(a, base65Monthly);
+    const isSelected = a === sa;
+    const is65 = a === 65;
+    const isMax = total === maxTotal;
+
+    const pct = Math.round(total / maxTotal * 100);
+    const barColor = isMax ? ORANGE : isSelected ? ORANGE_MID : '#FFD5A8';
+    const tdColor = isMax || isSelected ? ORANGE : '#1A1A1A';
+    const fw = isMax || isSelected ? 700 : 400;
+
+    const tr = document.createElement('tr');
+    tr.style.background = isSelected ? '#FFF3E8' : is65 ? '#FFFBF5' : '#fff';
+    tr.onclick = () => {
+      document.getElementById('start-age').value = a;
+      update();
+    };
+    tr.innerHTML = `
+      <td style="padding:8px 10px;color:${isSelected?ORANGE:'#1A1A1A'};font-weight:${isSelected?700:400}">
+        ${a}歳${a<65?'⬇':a>65?'⬆':''}
+      </td>
+      <td style="padding:8px 10px;color:${isSelected?ORANGE:'#1A1A1A'};font-weight:${isSelected?700:400}">
+        ${monthly.toLocaleString()}円
+      </td>
+      <td style="padding:8px 10px">
+        <div class="bar-wrap">
+          <div class="bar-bg">
+            <div class="bar-fill" style="width:${pct}%;background:${barColor}"></div>
+          </div>
+          <span style="font-size:14px;font-weight:${fw};color:${tdColor};white-space:nowrap">
+            ${total.toLocaleString()}万${isMax?'<span class="max-badge">最大</span>':''}
+          </span>
+        </div>
+      </td>
+      <td style="padding:8px 10px;color:#888">${be2 ? be2+'歳' : '−'}</td>
+    `;
+    tbody.appendChild(tr);
+  }
+
+  // graph
+  drawGraph(sa, life, base65Annual);
+}
+
+function drawGraph(selectedSa, life, base65Annual) {
+  const svg = document.getElementById('graph-svg');
+  const graphW = 540, graphH = 220;
+  const padL = 58, padR = 20, padT = 28, padB = 40;
+  const innerW = graphW - padL - padR;
+  const innerH = graphH - padT - padB;
+  const ages = Array.from({length: 61}, (_, i) => 60 + i);
+
+  const lineConfigs = [
+    {sa:60, color:'#FF9F40', label:'60歳繰上げ', dash:'6,3'},
+    {sa:65, color:'#FF6B00', label:'65歳（基準）', dash:''},
+    {sa:70, color:'#C0392B', label:'70歳繰下げ', dash:''},
+  ];
+  if (![60,65,70].includes(selectedSa)) {
+    lineConfigs.push({sa:selectedSa, color:'#9B59B6', label:`${selectedSa}歳（選択中）`, dash:''});
+  }
+
+  const getVals = (sa) => ages.map(a => {
+    const m = (base65Annual * getAdjRate(sa)) / 12;
+    return Math.round(Math.max(0, (a - sa) * 12) * m / 10000);
+  });
+
+  const allVals = lineConfigs.flatMap(c => getVals(c.sa));
+  const maxVal = Math.max(...allVals) || 1;
+
+  const xPos = (i) => padL + (i / (ages.length - 1)) * innerW;
+  const yPos = (v) => padT + innerH - (v / maxVal) * innerH;
+
+  let html = '';
+
+  // grid
+  [0, 0.25, 0.5, 0.75, 1].forEach(r => {
+    const y = padT + innerH * (1 - r);
+    html += `<line x1="${padL}" x2="${padL+innerW}" y1="${y}" y2="${y}" stroke="#F0F0F0" stroke-width="1"/>`;
+    html += `<text x="${padL-4}" y="${y+4}" text-anchor="end" font-size="9" fill="#888">${Math.round(maxVal*r)}</text>`;
+  });
+
+  // x-axis
+  ages.filter((_,i) => i % 5 === 0).forEach(a => {
+    const i = ages.indexOf(a);
+    html += `<text x="${xPos(i)}" y="${padT+innerH+16}" text-anchor="middle" font-size="10" fill="#888">${a}歳</text>`;
+  });
+
+  // life line
+  const lifeIdx = ages.indexOf(life);
+  if (lifeIdx >= 0) {
+    const lx = xPos(lifeIdx);
+    html += `<line x1="${lx}" x2="${lx}" y1="${padT}" y2="${padT+innerH}" stroke="#FF6B00" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.7"/>`;
+    html += `<text x="${lx+3}" y="${padT+10}" font-size="9" fill="#FF6B00">${life}歳</text>`;
+  }
+
+  // lines
+  lineConfigs.forEach(cfg => {
+    const vals = getVals(cfg.sa);
+    const pts = vals.map((v,i) => `${xPos(i)},${yPos(v)}`).join(' ');
+    const opacity = cfg.sa === selectedSa ? 1 : 0.3;
+    const sw = cfg.sa === selectedSa ? 3 : 1.5;
+    html += `<polyline points="${pts}" fill="none" stroke="${cfg.color}" stroke-width="${sw}" stroke-dasharray="${cfg.dash}" opacity="${opacity}"/>`;
+  });
+
+  // legend (first 3 only)
+  lineConfigs.slice(0,3).forEach((cfg, i) => {
+    const x = padL + i * 148;
+    html += `<g transform="translate(${x},${padT-16})">`;
+    html += `<line x1="0" x2="18" y1="0" y2="0" stroke="${cfg.color}" stroke-width="2" stroke-dasharray="${cfg.dash}"/>`;
+    html += `<text x="22" y="4" font-size="10" fill="#1A1A1A">${cfg.label}</text>`;
+    html += `</g>`;
+  });
+
+  svg.innerHTML = html;
+}
+
+// life age helper
+function updateLifeAge(v) {
+  document.getElementById('life-age-val').textContent = v + '歳';
+  update();
+}
+
+// init
+update();
+</script>
+</body>
+</html>
