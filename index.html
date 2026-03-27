@@ -336,6 +336,24 @@
       margin-bottom: 14px; line-height: 1.6;
     }
 
+    /* 入力グループカード */
+    .input-group {
+      background: #FAFAFA;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 14px;
+      border: 1px solid #F0F0F0;
+    }
+    .input-group-title {
+      font-size: 13px; font-weight: 700; color: #FF6B00;
+      margin-bottom: 14px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .input-group-divider {
+      border: none; border-top: 1px solid #EBEBEB;
+      margin: 14px 0;
+    }
+
     /* 将来予測セクション */
     .future-section {
       border-top: 1px dashed #FFB366;
@@ -428,82 +446,90 @@
   <div class="card">
     <div class="section-title">① あなたの情報を入力</div>
 
-    <div class="label">あなたの働き方は？</div>
-    <div class="type-btns">
-      <button class="type-btn active" data-type="company" onclick="setType('company')">🏢 会社員・公務員</button>
-      <button class="type-btn" data-type="self" onclick="setType('self')">🏠 自営業・フリーランス</button>
-      <button class="type-btn" data-type="both" onclick="setType('both')">🔄 途中で変わった</button>
-    </div>
-    <div class="hint-box" id="type-hint">
-      <strong>🏢 会社員・公務員の方へ</strong><br>
-      厚生年金に加入すると、<strong>国民年金にも自動的に加入</strong>しています。老後は「基礎年金（1階）」＋「厚生年金（2階）」の2階建てで受け取れます。
-    </div>
-
-    <div class="label">
-      📋 国民年金の納付月数：<strong id="nenkin-years-label" style="color:#FF6B00">48ヶ月</strong>
-      <span class="label-note" id="nenkin-pct">—</span>
-    </div>
-    <div class="myna-hint" id="nenkin-hint">
-      📱 マイナポータルの「年金」画面の <strong>「国民年金 納付月数」</strong> をそのまま入力してください<br>
-      <small style="color:#666">※自営業・学生・専業主婦（第3号）など、厚生年金以外の期間が含まれます</small>
-    </div>
-    <div class="range-wrap"><input type="range" id="nenkin-years" min="0" max="480" value="48" step="1" oninput="updateSliderFill(this);update()"></div>
-    <div class="range-labels"><span>0ヶ月</span><span>480ヶ月（満額）</span></div>
-    <div class="stepper-row">
-      <button class="stepper-btn" ontouchstart="startStep('nenkin-years',-1);event.preventDefault()" onmousedown="startStep('nenkin-years',-1)" ontouchend="stopStep()" onmouseup="stopStep()" onmouseleave="stopStep()">−</button>
-      <span class="stepper-val" id="nenkin-years-stepval">48ヶ月</span>
-      <span class="stepper-unit">ヶ月</span>
-      <button class="stepper-btn" ontouchstart="startStep('nenkin-years',1);event.preventDefault()" onmousedown="startStep('nenkin-years',1)" ontouchend="stopStep()" onmouseup="stopStep()" onmouseleave="stopStep()">＋</button>
-    </div>
-
-    <div class="kosei-section" id="kosei-section">
-      <div class="hint-box" style="margin-top:-4px">
-        <strong>💡 会社員の方：厚生年金の納付月数も入力してください</strong><br>
-        厚生年金に加入した月数分、年金が上乗せされます。マイナポータルの「厚生年金 納付月数」を確認しましょう。
+    <!-- グループA: 働き方 -->
+    <div class="input-group">
+      <div class="input-group-title">👤 働き方を選んでください</div>
+      <div class="type-btns">
+        <button class="type-btn active" data-type="company" onclick="setType('company')">🏢 会社員・公務員</button>
+        <button class="type-btn" data-type="self" onclick="setType('self')">🏠 自営業・フリーランス</button>
+        <button class="type-btn" data-type="both" onclick="setType('both')">🔄 途中で変わった</button>
       </div>
+      <div class="hint-box" id="type-hint" style="margin-bottom:0">
+        <strong>🏢 会社員・公務員の方へ</strong><br>
+        厚生年金に加入すると、<strong>国民年金にも自動的に加入</strong>しています。老後は「基礎年金（1階）」＋「厚生年金（2階）」の2階建てで受け取れます。
+      </div>
+    </div>
+
+    <!-- グループB: 現在の加入実績 -->
+    <div class="input-group">
+      <div class="input-group-title">📋 現在までの加入実績（マイナポータルで確認）</div>
 
       <div class="label">
-        💰 平均月収（税引き前・ボーナス除く）：<strong id="salary-label" style="color:#FF6B00">28万円</strong>
-        <span class="label-badge" id="salary-badge">💼 全国平均的なサラリーマン</span>
+        国民年金の納付月数：<strong id="nenkin-years-label" style="color:#FF6B00">48ヶ月</strong>
+        <div id="nenkin-pct" style="font-size:12px;color:#888;margin-top:4px;line-height:1.7;"></div>
       </div>
-      <div class="input-note">※ 給与明細の「総支給額」の目安（ボーナスは含めない）</div>
-      <div class="range-wrap"><input type="range" id="avg-salary" min="10" max="65" value="28" step="1" oninput="updateSliderFill(this);update()"></div>
-      <div class="range-labels">
-        <span>10万円</span><span class="mid">▲平均33万円</span><span>65万円（上限）</span>
+      <div class="myna-hint" id="nenkin-hint">
+        📱 マイナポータル「年金」→ <strong>「国民年金 納付月数」</strong><br>
+        <small style="color:#666">※自営業・学生・専業主婦（第3号）など厚生年金以外の期間</small>
       </div>
+      <div class="range-wrap"><input type="range" id="nenkin-years" min="0" max="480" value="48" step="1" oninput="updateSliderFill(this);update()"></div>
+      <div class="range-labels"><span>0ヶ月</span><span>480ヶ月（満額）</span></div>
       <div class="stepper-row">
-        <button class="stepper-btn" ontouchstart="startStep('avg-salary',-1);event.preventDefault()" onmousedown="startStep('avg-salary',-1)" ontouchend="stopStep()" onmouseup="stopStep()" onmouseleave="stopStep()">−</button>
-        <span class="stepper-val" id="avg-salary-stepval">28</span>
-        <span class="stepper-unit">万円</span>
-        <button class="stepper-btn" ontouchstart="startStep('avg-salary',1);event.preventDefault()" onmousedown="startStep('avg-salary',1)" ontouchend="stopStep()" onmouseup="stopStep()" onmouseleave="stopStep()">＋</button>
-      </div>
-      <div class="quick-btns">
-        <button class="quick-btn" onclick="setSalary(15)">パート 15万</button>
-        <button class="quick-btn" onclick="setSalary(24)">一般職 24万</button>
-        <button class="quick-btn" onclick="setSalary(33)">平均 33万</button>
-        <button class="quick-btn" onclick="setSalary(45)">管理職 45万</button>
-      </div>
-      <a href="https://www.nenkin.go.jp/n_net/" target="_blank" rel="noopener noreferrer" class="nenkin-link">
-        🔍 正確な金額はねんきんネットで確認できます →
-      </a>
-
-      <div class="label">📋 厚生年金の納付月数：<strong id="kousei-years-label" style="color:#FF6B00">360ヶ月</strong></div>
-      <div class="myna-hint">
-        📱 マイナポータルの「年金」画面の <strong>「厚生年金 納付月数」</strong> をそのまま入力してください<br>
-        <small style="color:#666">※会社員・公務員として働いた期間の月数です。厚生年金に加入した分は、基礎年金にも自動的に反映されます</small>
-      </div>
-      <div class="range-wrap"><input type="range" id="kousei-years" min="1" max="504" value="360" step="1" oninput="updateSliderFill(this);update()"></div>
-      <div class="range-labels"><span>1ヶ月</span><span style="color:#FF6B00">▲平均360ヶ月</span><span>504ヶ月</span></div>
-      <div class="stepper-row">
-        <button class="stepper-btn" ontouchstart="startStep('kousei-years',-1);event.preventDefault()" onmousedown="startStep('kousei-years',-1)" ontouchend="stopStep()" onmouseup="stopStep()" onmouseleave="stopStep()">−</button>
-        <span class="stepper-val" id="kousei-years-stepval">360</span>
+        <button class="stepper-btn" ontouchstart="startStep('nenkin-years',-1);event.preventDefault()" onmousedown="startStep('nenkin-years',-1)" ontouchend="stopStep()" onmouseup="stopStep()" onmouseleave="stopStep()">−</button>
+        <span class="stepper-val" id="nenkin-years-stepval">48ヶ月</span>
         <span class="stepper-unit">ヶ月</span>
-        <button class="stepper-btn" ontouchstart="startStep('kousei-years',1);event.preventDefault()" onmousedown="startStep('kousei-years',1)" ontouchend="stopStep()" onmouseup="stopStep()" onmouseleave="stopStep()">＋</button>
+        <button class="stepper-btn" ontouchstart="startStep('nenkin-years',1);event.preventDefault()" onmousedown="startStep('nenkin-years',1)" ontouchend="stopStep()" onmouseup="stopStep()" onmouseleave="stopStep()">＋</button>
+      </div>
+
+      <div class="kosei-section" id="kosei-section">
+        <hr class="input-group-divider">
+        <div class="label">
+          厚生年金の納付月数：<strong id="kousei-years-label" style="color:#FF6B00">360ヶ月</strong>
+        </div>
+        <div class="myna-hint">
+          📱 マイナポータル「年金」→ <strong>「厚生年金 納付月数」</strong><br>
+          <small style="color:#666">※会社員・公務員として働いた期間。基礎年金にも自動反映されます</small>
+        </div>
+        <div class="range-wrap"><input type="range" id="kousei-years" min="1" max="504" value="360" step="1" oninput="updateSliderFill(this);update()"></div>
+        <div class="range-labels"><span>1ヶ月</span><span style="color:#FF6B00">▲平均360ヶ月</span><span>504ヶ月</span></div>
+        <div class="stepper-row">
+          <button class="stepper-btn" ontouchstart="startStep('kousei-years',-1);event.preventDefault()" onmousedown="startStep('kousei-years',-1)" ontouchend="stopStep()" onmouseup="stopStep()" onmouseleave="stopStep()">−</button>
+          <span class="stepper-val" id="kousei-years-stepval">360</span>
+          <span class="stepper-unit">ヶ月</span>
+          <button class="stepper-btn" ontouchstart="startStep('kousei-years',1);event.preventDefault()" onmousedown="startStep('kousei-years',1)" ontouchend="stopStep()" onmouseup="stopStep()" onmouseleave="stopStep()">＋</button>
+        </div>
+
+        <hr class="input-group-divider">
+        <div class="label">
+          💰 平均月収（税引き前・ボーナス除く）：<strong id="salary-label" style="color:#FF6B00">28万円</strong>
+          <span class="label-badge" id="salary-badge">💼 全国平均的なサラリーマン</span>
+        </div>
+        <div class="input-note">※ 給与明細の「総支給額」目安（ボーナスは含めない）</div>
+        <div class="range-wrap"><input type="range" id="avg-salary" min="10" max="65" value="28" step="1" oninput="updateSliderFill(this);update()"></div>
+        <div class="range-labels">
+          <span>10万円</span><span class="mid">▲平均33万円</span><span>65万円（上限）</span>
+        </div>
+        <div class="stepper-row">
+          <button class="stepper-btn" ontouchstart="startStep('avg-salary',-1);event.preventDefault()" onmousedown="startStep('avg-salary',-1)" ontouchend="stopStep()" onmouseup="stopStep()" onmouseleave="stopStep()">−</button>
+          <span class="stepper-val" id="avg-salary-stepval">28</span>
+          <span class="stepper-unit">万円</span>
+          <button class="stepper-btn" ontouchstart="startStep('avg-salary',1);event.preventDefault()" onmousedown="startStep('avg-salary',1)" ontouchend="stopStep()" onmouseup="stopStep()" onmouseleave="stopStep()">＋</button>
+        </div>
+        <div class="quick-btns">
+          <button class="quick-btn" onclick="setSalary(15)">パート 15万</button>
+          <button class="quick-btn" onclick="setSalary(24)">一般職 24万</button>
+          <button class="quick-btn" onclick="setSalary(33)">平均 33万</button>
+          <button class="quick-btn" onclick="setSalary(45)">管理職 45万</button>
+        </div>
+        <a href="https://www.nenkin.go.jp/n_net/" target="_blank" rel="noopener noreferrer" class="nenkin-link">
+          🔍 正確な金額はねんきんネットで確認できます →
+        </a>
       </div>
     </div>
 
-    <div class="future-section">
-      <span class="future-tag">📈 将来の見込みを追加</span>
+    <!-- グループC: 将来の見込み -->
+    <div class="input-group">
+      <div class="input-group-title">📈 将来の見込み（今後の加入分を自動計算）</div>
       <div class="hint-box" style="margin-bottom:14px">
         現在の年齢と退職予定年齢を入力すると、<strong>今後の加入分を自動で上乗せ</strong>して計算します。
       </div>
@@ -518,6 +544,7 @@
         <button class="stepper-btn" ontouchstart="startStep('current-age',1);event.preventDefault()" onmousedown="startStep('current-age',1)" ontouchend="stopStep()" onmouseup="stopStep()" onmouseleave="stopStep()">＋</button>
       </div>
 
+      <hr class="input-group-divider">
       <div class="label">退職予定年齢：<strong id="retire-age-label" style="color:#FF6B00">60歳</strong></div>
       <div class="range-wrap"><input type="range" id="retire-age" min="20" max="75" value="60" step="1" oninput="updateSliderFill(this);update()"></div>
       <div class="range-labels"><span>20歳</span><span>75歳</span></div>
@@ -528,23 +555,25 @@
         <button class="stepper-btn" ontouchstart="startStep('retire-age',1);event.preventDefault()" onmousedown="startStep('retire-age',1)" ontouchend="stopStep()" onmouseup="stopStep()" onmouseleave="stopStep()">＋</button>
       </div>
 
-      <div class="forecast-box" id="forecast-box">
-        ⏳ 計算中...
-      </div>
+      <div class="forecast-box" id="forecast-box">⏳ 計算中...</div>
     </div>
 
-    <div class="label" style="margin-top:16px">
-      📅 年金を受け取り始める年齢：<strong id="start-age-label" style="color:#FF6B00">65歳</strong>
-      <span id="start-age-note" style="font-size:11px;margin-left:6px;"></span>
-    </div>
-    <div class="input-note">※ 早くもらうと月額が減り、遅くもらうと月額が増えます（下の表で比較できます）</div>
-    <div class="range-wrap"><input type="range" id="start-age" min="60" max="75" value="65" oninput="updateSliderFill(this);update()"></div>
-    <div class="range-labels"><span>60歳（最も早い）</span><span>75歳（最も遅い）</span></div>
-    <div class="stepper-row">
-      <button class="stepper-btn" ontouchstart="startStep('start-age',-1);event.preventDefault()" onmousedown="startStep('start-age',-1)" ontouchend="stopStep()" onmouseup="stopStep()" onmouseleave="stopStep()">−</button>
-      <span class="stepper-val" id="start-age-stepval">65</span>
-      <span class="stepper-unit">歳</span>
-      <button class="stepper-btn" ontouchstart="startStep('start-age',1);event.preventDefault()" onmousedown="startStep('start-age',1)" ontouchend="stopStep()" onmouseup="stopStep()" onmouseleave="stopStep()">＋</button>
+    <!-- グループD: 受給開始年齢 -->
+    <div class="input-group">
+      <div class="input-group-title">📅 年金を受け取り始める年齢</div>
+      <div class="label">
+        <strong id="start-age-label" style="color:#FF6B00">65歳</strong>
+        <span id="start-age-note" style="font-size:11px;margin-left:6px;"></span>
+      </div>
+      <div class="input-note">※ 早くもらうと月額が減り、遅くもらうと月額が増えます</div>
+      <div class="range-wrap"><input type="range" id="start-age" min="60" max="75" value="65" oninput="updateSliderFill(this);update()"></div>
+      <div class="range-labels"><span>60歳（最も早い）</span><span>75歳（最も遅い）</span></div>
+      <div class="stepper-row">
+        <button class="stepper-btn" ontouchstart="startStep('start-age',-1);event.preventDefault()" onmousedown="startStep('start-age',-1)" ontouchend="stopStep()" onmouseup="stopStep()" onmouseleave="stopStep()">−</button>
+        <span class="stepper-val" id="start-age-stepval">65</span>
+        <span class="stepper-unit">歳</span>
+        <button class="stepper-btn" ontouchstart="startStep('start-age',1);event.preventDefault()" onmousedown="startStep('start-age',1)" ontouchend="stopStep()" onmouseup="stopStep()" onmouseleave="stopStep()">＋</button>
+      </div>
     </div>
   </div>
 
@@ -737,7 +766,23 @@ function update() {
     fcBox.innerHTML = '⚠️ 退職予定年齢が現在の年齢以下のため、将来分は加算されません';
   }
 
-  document.getElementById('nenkin-pct').textContent = totalKisoMonths >= 480 ? '合計480ヶ月 ✅ 満額' : `合計${totalKisoMonths}ヶ月（満額の${Math.round(totalKisoMonths / 480 * 100)}%）`;
+  // 現時点の実績のみ
+  const pctNow = Math.round(currentKisoMonths / 480 * 100);
+  const nowText = currentKisoMonths >= 480
+    ? '📌 現時点：480ヶ月 ✅ 満額'
+    : `📌 現時点：${currentKisoMonths}ヶ月（満額の${pctNow}%）`;
+  // 退職時点の見込み（将来分含む）
+  const pctFuture = Math.round(totalKisoMonths / 480 * 100);
+  const futureText = totalKisoMonths >= 480
+    ? `📈 退職時点の見込み：480ヶ月 ✅ 満額`
+    : `📈 退職時点の見込み：${totalKisoMonths}ヶ月（満額の${pctFuture}%）`;
+  // 将来分がある場合は2行、ない場合は1行
+  const pctEl = document.getElementById('nenkin-pct');
+  if (futureMonths > 0 && retireAge > currentAge) {
+    pctEl.innerHTML = nowText + '<br>' + futureText;
+  } else {
+    pctEl.innerHTML = nowText;
+  }
   document.getElementById('salary-label').textContent = salary + '万円';
   document.getElementById('salary-badge').textContent = salaryBadge(salary);
   document.getElementById('start-age-label').textContent = sa + '歳';
