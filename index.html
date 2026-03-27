@@ -76,6 +76,11 @@
       text-shadow: 0 0 8px rgba(255,107,0,0.8);
     }
 
+    /* Range wrapper - タッチ領域を確保 */
+    .range-wrap {
+      margin-bottom: 4px;
+    }
+
     /* Range */
     input[type=range] {
       width: 100%;
@@ -83,49 +88,76 @@
       cursor: pointer;
       -webkit-appearance: none;
       appearance: none;
-      height: 6px;
-      border-radius: 3px;
+      /* 高さを大きくしてタッチしやすく */
+      height: 40px;
+      border-radius: 20px;
       outline: none;
-      background: linear-gradient(to right, #FF6B00 0%, #FF6B00 50%, #E0E0E0 50%, #E0E0E0 100%);
+      background: transparent;
     }
     input[type=range]::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
-      width: 24px; height: 24px;
+      width: 34px; height: 34px;
       border-radius: 50%;
       background: #FF6B00;
       cursor: pointer;
       border: 3px solid #fff;
-      box-shadow: 0 0 0 1.5px #FF6B00, 0 0 8px rgba(255,107,0,0.5);
-      margin-top: -9px;
+      box-shadow: 0 0 0 1.5px #FF6B00, 0 2px 8px rgba(255,107,0,0.4);
+      margin-top: -13px;
     }
     input[type=range]::-moz-range-thumb {
-      width: 24px; height: 24px;
+      width: 34px; height: 34px;
       border-radius: 50%;
       background: #FF6B00;
       cursor: pointer;
       border: 3px solid #fff;
-      box-shadow: 0 0 0 1.5px #FF6B00, 0 0 8px rgba(255,107,0,0.5);
+      box-shadow: 0 0 0 1.5px #FF6B00, 0 2px 8px rgba(255,107,0,0.4);
     }
     input[type=range]::-webkit-slider-runnable-track {
-      height: 6px;
-      border-radius: 3px;
+      height: 8px;
+      border-radius: 4px;
+      background: #E0E0E0;
     }
     input[type=range]::-moz-range-track {
-      height: 6px;
-      border-radius: 3px;
+      height: 8px;
+      border-radius: 4px;
       background: #E0E0E0;
     }
     input[type=range]::-moz-range-progress {
-      height: 6px;
-      border-radius: 3px;
+      height: 8px;
+      border-radius: 4px;
       background: #FF6B00;
     }
     .range-labels {
       display: flex; justify-content: space-between;
-      font-size: 12px; color: #888; margin-bottom: 16px;
+      font-size: 12px; color: #888; margin-bottom: 6px;
     }
     .range-labels .mid { color: #FF6B00; }
+
+    /* ステッパーコントロール（±ボタンのみ） */
+    .stepper-row {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
+    }
+    .stepper-btn {
+      width: 44px; height: 44px; border-radius: 50%;
+      border: 2px solid #FF6B00; background: #fff;
+      color: #FF6B00; font-size: 22px; font-weight: 700;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; user-select: none; -webkit-user-select: none;
+      box-shadow: 0 0 6px rgba(255,107,0,0.25);
+      font-family: inherit; line-height: 1; touch-action: manipulation;
+    }
+    .stepper-btn:active {
+      background: #FF6B00; color: #fff;
+      box-shadow: 0 0 10px rgba(255,107,0,0.5);
+    }
+    .stepper-val {
+      flex: 1; text-align: center;
+      font-size: 18px; font-weight: 700; color: #FF6B00;
+    }
+    .stepper-unit {
+      font-size: 13px; color: #888; flex-shrink: 0;
+    }
 
     /* Quick buttons */
     .quick-btns { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
@@ -247,6 +279,86 @@
     /* Kosei section */
     .kosei-section { display: block; }
     .kosei-section.hidden { display: none; }
+
+    /* 使い方アコーディオン */
+    .howto-wrap {
+      background: #fff; border-radius: 16px;
+      margin-bottom: 14px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      overflow: hidden;
+    }
+    .howto-toggle {
+      width: 100%; display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 18px; background: none; border: none;
+      font-family: inherit; font-size: 15px; font-weight: 700; color: #1A1A1A;
+      cursor: pointer; text-align: left;
+    }
+    .howto-toggle-left { display: flex; align-items: center; gap: 8px; }
+    .howto-toggle-left::before {
+      content: ''; display: inline-block; width: 4px; height: 16px;
+      background: #FF6B00; border-radius: 2px; flex-shrink: 0;
+    }
+    .howto-arrow {
+      font-size: 12px; color: #FF6B00; transition: transform 0.3s;
+    }
+    .howto-arrow.open { transform: rotate(180deg); }
+    .howto-body {
+      display: none; padding: 0 18px 18px;
+    }
+    .howto-body.open { display: block; }
+    .howto-step {
+      display: flex; gap: 12px; margin-bottom: 14px; align-items: flex-start;
+    }
+    .howto-step:last-child { margin-bottom: 0; }
+    .howto-num {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: #FF6B00; color: #fff;
+      font-size: 13px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .howto-text { font-size: 13px; color: #1A1A1A; line-height: 1.7; }
+    .howto-text strong { color: #FF6B00; }
+    .howto-text small { display: block; color: #888; font-size: 12px; margin-top: 2px; }
+    .howto-divider { border: none; border-top: 1px solid #F0F0F0; margin: 14px 0; }
+
+    /* ヒントボックス */
+    .hint-box {
+      background: #FFF3E8; border-left: 3px solid #FF6B00;
+      border-radius: 0 8px 8px 0; padding: 10px 14px;
+      margin-bottom: 14px; font-size: 12px; color: #6B3800;
+      line-height: 1.7;
+    }
+    .hint-box strong { color: #FF6B00; }
+
+    /* 入力グループ */
+    .input-note {
+      font-size: 12px; color: #888; margin-top: -10px;
+      margin-bottom: 14px; line-height: 1.6;
+    }
+
+    /* 将来予測セクション */
+    .future-section {
+      border-top: 1px dashed #FFB366;
+      margin-top: 6px; padding-top: 16px;
+    }
+    .future-tag {
+      display: inline-block; font-size: 11px;
+      background: #FF6B00; color: #fff;
+      border-radius: 4px; padding: 2px 8px;
+      font-weight: 700; margin-bottom: 10px;
+    }
+    .forecast-box {
+      background: #F0F7FF; border-left: 3px solid #2980B9;
+      border-radius: 0 8px 8px 0; padding: 10px 14px;
+      margin-top: 12px; font-size: 12px; color: #1A4A6B;
+      line-height: 1.7;
+    }
+    .forecast-box strong { color: #2980B9; }
+    .myna-hint {
+      display: flex; align-items: center; gap: 8px;
+      background: #F0F7FF; border-radius: 8px; padding: 8px 12px;
+      font-size: 12px; color: #1A6BAA; margin-bottom: 14px;
+    }
   </style>
 </head>
 <body>
@@ -259,32 +371,111 @@
     <div class="header-sub">老後の収入を、数字で確認しよう</div>
   </div>
 
+  <!-- 使い方 -->
+  <div class="howto-wrap">
+    <button class="howto-toggle" onclick="toggleHowto()">
+      <span class="howto-toggle-left">📖 使い方・見方</span>
+      <span class="howto-arrow" id="howto-arrow">▼</span>
+    </button>
+    <div class="howto-body" id="howto-body">
+      <div class="howto-step">
+        <div class="howto-num">1</div>
+        <div class="howto-text">
+          <strong>働き方を選ぶ</strong>
+          <small>会社員・自営業など、あなたの働き方に近いものを選んでください。</small>
+        </div>
+      </div>
+      <div class="howto-step">
+        <div class="howto-num">2</div>
+        <div class="howto-text">
+          <strong>納付月数を入力する</strong>
+          <small>マイナポータルの「年金」画面に表示されている月数をそのまま入力します。スライダーを動かすか、数値を参考に合わせてください。</small>
+        </div>
+      </div>
+      <div class="howto-step">
+        <div class="howto-num">3</div>
+        <div class="howto-text">
+          <strong>平均月収を入力する（会社員のみ）</strong>
+          <small>給与明細の「総支給額」の目安を入力します。ボーナスは含めません。わからない場合はクイックボタンで近い金額を選んでください。</small>
+        </div>
+      </div>
+      <hr class="howto-divider">
+      <div class="howto-step">
+        <div class="howto-num">4</div>
+        <div class="howto-text">
+          <strong>受け取り開始年齢を動かす</strong>
+          <small>65歳が基準です。早くもらうと月額が減り、遅くもらうと月額が増えます。下の表で各年齢の累計額を比較できます。</small>
+        </div>
+      </div>
+      <div class="howto-step">
+        <div class="howto-num">5</div>
+        <div class="howto-text">
+          <strong>想定寿命を変えて比較する</strong>
+          <small>「何歳まで生きるか」を変えると、どの開始年齢が総受取額で一番お得かが変わります。</small>
+        </div>
+      </div>
+      <hr class="howto-divider">
+      <div class="howto-text" style="background:#FFF3E8;border-radius:8px;padding:10px 12px;">
+        💡 <strong>年金は2階建て</strong><br>
+        国民年金（基礎年金）＝全員が受け取れる1階部分<br>
+        厚生年金＝会社員・公務員が受け取れる2階部分<br>
+        <small style="color:#888">会社員は厚生年金に加入すると、国民年金にも自動的に加入されます。</small>
+      </div>
+    </div>
+  </div>
+
   <!-- 入力 -->
   <div class="card">
     <div class="section-title">① あなたの情報を入力</div>
 
-    <div class="label">職業タイプ</div>
+    <div class="label">あなたの働き方は？</div>
     <div class="type-btns">
-      <button class="type-btn active" data-type="company" onclick="setType('company')">会社員</button>
-      <button class="type-btn" data-type="self" onclick="setType('self')">自営業・フリー</button>
-      <button class="type-btn" data-type="both" onclick="setType('both')">両方経験あり</button>
+      <button class="type-btn active" data-type="company" onclick="setType('company')">🏢 会社員・公務員</button>
+      <button class="type-btn" data-type="self" onclick="setType('self')">🏠 自営業・フリーランス</button>
+      <button class="type-btn" data-type="both" onclick="setType('both')">🔄 途中で変わった</button>
+    </div>
+    <div class="hint-box" id="type-hint">
+      <strong>🏢 会社員・公務員の方へ</strong><br>
+      厚生年金に加入すると、<strong>国民年金にも自動的に加入</strong>しています。老後は「基礎年金（1階）」＋「厚生年金（2階）」の2階建てで受け取れます。
     </div>
 
     <div class="label">
-      国民年金（基礎年金）加入年数：<strong id="nenkin-years-label" style="color:#FF6B00">35年</strong>
-      <span class="label-note" id="nenkin-pct">満額の95%</span>
+      📋 国民年金の納付月数：<strong id="nenkin-years-label" style="color:#FF6B00">48ヶ月</strong>
+      <span class="label-note" id="nenkin-pct">—</span>
     </div>
-    <input type="range" id="nenkin-years" min="1" max="40" value="35" oninput="updateSliderFill(this);update()">
-    <div class="range-labels"><span>1年</span><span>40年（満額）</span></div>
+    <div class="myna-hint" id="nenkin-hint">
+      📱 マイナポータルの「年金」画面の <strong>「国民年金 納付月数」</strong> をそのまま入力してください<br>
+      <small style="color:#666">※自営業・学生・専業主婦（第3号）など、厚生年金以外の期間が含まれます</small>
+    </div>
+    <div class="range-wrap"><input type="range" id="nenkin-years" min="0" max="480" value="48" step="1" oninput="updateSliderFill(this);update()"></div>
+    <div class="range-labels"><span>0ヶ月</span><span>480ヶ月（満額）</span></div>
+    <div class="stepper-row">
+      <button class="stepper-btn" ontouchstart="startStep('nenkin-years',-1);event.preventDefault()" onmousedown="startStep('nenkin-years',-1)" ontouchend="stopStep()" onmouseup="stopStep()" onmouseleave="stopStep()">−</button>
+      <span class="stepper-val" id="nenkin-years-stepval">48ヶ月</span>
+      <span class="stepper-unit">ヶ月</span>
+      <button class="stepper-btn" ontouchstart="startStep('nenkin-years',1);event.preventDefault()" onmousedown="startStep('nenkin-years',1)" ontouchend="stopStep()" onmouseup="stopStep()" onmouseleave="stopStep()">＋</button>
+    </div>
 
     <div class="kosei-section" id="kosei-section">
+      <div class="hint-box" style="margin-top:-4px">
+        <strong>💡 会社員の方：厚生年金の納付月数も入力してください</strong><br>
+        厚生年金に加入した月数分、年金が上乗せされます。マイナポータルの「厚生年金 納付月数」を確認しましょう。
+      </div>
+
       <div class="label">
-        厚生年金 平均月収（総支給額・ボーナス除く）：<strong id="salary-label" style="color:#FF6B00">28万円</strong>
+        💰 平均月収（税引き前・ボーナス除く）：<strong id="salary-label" style="color:#FF6B00">28万円</strong>
         <span class="label-badge" id="salary-badge">💼 全国平均的なサラリーマン</span>
       </div>
-      <input type="range" id="avg-salary" min="10" max="65" value="28" oninput="updateSliderFill(this);update()">
+      <div class="input-note">※ 給与明細の「総支給額」の目安（ボーナスは含めない）</div>
+      <div class="range-wrap"><input type="range" id="avg-salary" min="10" max="65" value="28" step="1" oninput="updateSliderFill(this);update()"></div>
       <div class="range-labels">
         <span>10万円</span><span class="mid">▲平均33万円</span><span>65万円（上限）</span>
+      </div>
+      <div class="stepper-row">
+        <button class="stepper-btn" ontouchstart="startStep('avg-salary',-1);event.preventDefault()" onmousedown="startStep('avg-salary',-1)" ontouchend="stopStep()" onmouseup="stopStep()" onmouseleave="stopStep()">−</button>
+        <span class="stepper-val" id="avg-salary-stepval">28</span>
+        <span class="stepper-unit">万円</span>
+        <button class="stepper-btn" ontouchstart="startStep('avg-salary',1);event.preventDefault()" onmousedown="startStep('avg-salary',1)" ontouchend="stopStep()" onmouseup="stopStep()" onmouseleave="stopStep()">＋</button>
       </div>
       <div class="quick-btns">
         <button class="quick-btn" onclick="setSalary(15)">パート 15万</button>
@@ -293,20 +484,68 @@
         <button class="quick-btn" onclick="setSalary(45)">管理職 45万</button>
       </div>
       <a href="https://www.nenkin.go.jp/n_net/" target="_blank" rel="noopener noreferrer" class="nenkin-link">
-        🔍 自分の標準報酬月額をねんきんネットで確認する →
+        🔍 正確な金額はねんきんネットで確認できます →
       </a>
 
-      <div class="label">厚生年金 加入年数：<strong id="kousei-years-label" style="color:#FF6B00">30年</strong></div>
-      <input type="range" id="kousei-years" min="1" max="42" value="30" oninput="updateSliderFill(this);update()">
-      <div class="range-labels"><span>1年</span><span>42年</span></div>
+      <div class="label">📋 厚生年金の納付月数：<strong id="kousei-years-label" style="color:#FF6B00">360ヶ月</strong></div>
+      <div class="myna-hint">
+        📱 マイナポータルの「年金」画面の <strong>「厚生年金 納付月数」</strong> をそのまま入力してください<br>
+        <small style="color:#666">※会社員・公務員として働いた期間の月数です。厚生年金に加入した分は、基礎年金にも自動的に反映されます</small>
+      </div>
+      <div class="range-wrap"><input type="range" id="kousei-years" min="1" max="504" value="360" step="1" oninput="updateSliderFill(this);update()"></div>
+      <div class="range-labels"><span>1ヶ月</span><span style="color:#FF6B00">▲平均360ヶ月</span><span>504ヶ月</span></div>
+      <div class="stepper-row">
+        <button class="stepper-btn" ontouchstart="startStep('kousei-years',-1);event.preventDefault()" onmousedown="startStep('kousei-years',-1)" ontouchend="stopStep()" onmouseup="stopStep()" onmouseleave="stopStep()">−</button>
+        <span class="stepper-val" id="kousei-years-stepval">360</span>
+        <span class="stepper-unit">ヶ月</span>
+        <button class="stepper-btn" ontouchstart="startStep('kousei-years',1);event.preventDefault()" onmousedown="startStep('kousei-years',1)" ontouchend="stopStep()" onmouseup="stopStep()" onmouseleave="stopStep()">＋</button>
+      </div>
     </div>
 
-    <div class="label">
-      受給開始年齢：<strong id="start-age-label" style="color:#FF6B00">65歳</strong>
+    <div class="future-section">
+      <span class="future-tag">📈 将来の見込みを追加</span>
+      <div class="hint-box" style="margin-bottom:14px">
+        現在の年齢と退職予定年齢を入力すると、<strong>今後の加入分を自動で上乗せ</strong>して計算します。
+      </div>
+
+      <div class="label">現在の年齢：<strong id="current-age-label" style="color:#FF6B00">40歳</strong></div>
+      <div class="range-wrap"><input type="range" id="current-age" min="20" max="70" value="40" step="1" oninput="updateSliderFill(this);update()"></div>
+      <div class="range-labels"><span>20歳</span><span>70歳</span></div>
+      <div class="stepper-row">
+        <button class="stepper-btn" ontouchstart="startStep('current-age',-1);event.preventDefault()" onmousedown="startStep('current-age',-1)" ontouchend="stopStep()" onmouseup="stopStep()" onmouseleave="stopStep()">−</button>
+        <span class="stepper-val" id="current-age-stepval">40</span>
+        <span class="stepper-unit">歳</span>
+        <button class="stepper-btn" ontouchstart="startStep('current-age',1);event.preventDefault()" onmousedown="startStep('current-age',1)" ontouchend="stopStep()" onmouseup="stopStep()" onmouseleave="stopStep()">＋</button>
+      </div>
+
+      <div class="label">退職予定年齢：<strong id="retire-age-label" style="color:#FF6B00">60歳</strong></div>
+      <div class="range-wrap"><input type="range" id="retire-age" min="20" max="75" value="60" step="1" oninput="updateSliderFill(this);update()"></div>
+      <div class="range-labels"><span>20歳</span><span>75歳</span></div>
+      <div class="stepper-row">
+        <button class="stepper-btn" ontouchstart="startStep('retire-age',-1);event.preventDefault()" onmousedown="startStep('retire-age',-1)" ontouchend="stopStep()" onmouseup="stopStep()" onmouseleave="stopStep()">−</button>
+        <span class="stepper-val" id="retire-age-stepval">60</span>
+        <span class="stepper-unit">歳</span>
+        <button class="stepper-btn" ontouchstart="startStep('retire-age',1);event.preventDefault()" onmousedown="startStep('retire-age',1)" ontouchend="stopStep()" onmouseup="stopStep()" onmouseleave="stopStep()">＋</button>
+      </div>
+
+      <div class="forecast-box" id="forecast-box">
+        ⏳ 計算中...
+      </div>
+    </div>
+
+    <div class="label" style="margin-top:16px">
+      📅 年金を受け取り始める年齢：<strong id="start-age-label" style="color:#FF6B00">65歳</strong>
       <span id="start-age-note" style="font-size:11px;margin-left:6px;"></span>
     </div>
-    <input type="range" id="start-age" min="60" max="75" value="65" oninput="updateSliderFill(this);update()">
-    <div class="range-labels"><span>60歳（繰上げ最大）</span><span>75歳（繰下げ最大）</span></div>
+    <div class="input-note">※ 早くもらうと月額が減り、遅くもらうと月額が増えます（下の表で比較できます）</div>
+    <div class="range-wrap"><input type="range" id="start-age" min="60" max="75" value="65" oninput="updateSliderFill(this);update()"></div>
+    <div class="range-labels"><span>60歳（最も早い）</span><span>75歳（最も遅い）</span></div>
+    <div class="stepper-row">
+      <button class="stepper-btn" ontouchstart="startStep('start-age',-1);event.preventDefault()" onmousedown="startStep('start-age',-1)" ontouchend="stopStep()" onmouseup="stopStep()" onmouseleave="stopStep()">−</button>
+      <span class="stepper-val" id="start-age-stepval">65</span>
+      <span class="stepper-unit">歳</span>
+      <button class="stepper-btn" ontouchstart="startStep('start-age',1);event.preventDefault()" onmousedown="startStep('start-age',1)" ontouchend="stopStep()" onmouseup="stopStep()" onmouseleave="stopStep()">＋</button>
+    </div>
   </div>
 
   <!-- 結果カード -->
@@ -319,11 +558,11 @@
     </div>
     <div class="mini-cards">
       <div class="mini-card" id="mc-basic">
-        <div class="mini-card-label">基礎年金</div>
+        <div class="mini-card-label">基礎年金（1階部分）</div>
         <div class="mini-card-value" id="mc-basic-val">—</div>
       </div>
       <div class="mini-card" id="mc-kousei">
-        <div class="mini-card-label">厚生年金</div>
+        <div class="mini-card-label">厚生年金（2階部分）</div>
         <div class="mini-card-value" id="mc-kousei-val">—</div>
       </div>
       <div class="mini-card highlight">
@@ -340,7 +579,7 @@
       <div class="section-title" style="margin-bottom:0">② 受給開始年齢 比較表</div>
       <div class="life-select-wrap">
         <span>想定寿命</span>
-        <input type="range" id="life-age-slider" min="65" max="120" value="85" oninput="updateLifeAge(this.value)">
+        <div class="range-wrap"><input type="range" id="life-age-slider" min="65" max="120" value="85" oninput="updateLifeAge(this.value)"></div>
         <span class="life-age-val" id="life-age-val">85歳</span>
       </div>
     </div>
@@ -365,6 +604,7 @@
     <div class="section-title">③ 累計受給額グラフ（万円）</div>
     <div class="graph-note" id="graph-note">オレンジ縦線 = 想定寿命 85歳</div>
     <div class="graph-wrap">
+      <div id="graph-legend" style="display:flex;flex-wrap:wrap;gap:10px 20px;margin-bottom:10px;"></div>
       <svg id="graph-svg" viewBox="0 0 540 220"></svg>
     </div>
   </div>
@@ -373,7 +613,7 @@
   <div class="footer-note">
     <strong>⚠️ 計算について</strong><br>
     本シミュレーターは概算です。実際の年金額は日本年金機構の「<a href="https://www.nenkin.go.jp/n_net/" target="_blank" style="color:#FF6B00">ねんきんネット</a>」や「ねんきん定期便」でご確認ください。<br>
-    老齢基礎年金満額は2024年度の795,000円を使用。厚生年金は報酬比例部分の簡易計算です。標準報酬月額は総支給額（ボーナス除く）の目安です。
+    老齢基礎年金満額は2025年度（令和7年度）の831,700円（月額69,308円）を使用。厚生年金は報酬比例部分の簡易計算です。標準報酬月額は総支給額（ボーナス除く）の目安です。
   </div>
 
 </div>
@@ -423,6 +663,16 @@ function setType(t) {
   });
   document.getElementById('kosei-section').classList.toggle('hidden', t === 'self');
   document.getElementById('mc-kousei').style.display = t === 'self' ? 'none' : 'flex';
+  // ヒントを切替
+  const hints = {
+    company: '<strong>🏢 会社員・公務員の方へ</strong><br>厚生年金に加入すると、<strong>国民年金にも自動的に加入</strong>しています。老後は「基礎年金（1階）」＋「厚生年金（2階）」の2階建てで受け取れます。',
+    self: '<strong>🏠 自営業・フリーランスの方へ</strong><br>国民年金のみの加入です。老後は「基礎年金（1階）」のみ受け取れます。<br>💡 iDeCoや付加年金で老後の上乗せを検討しましょう。',
+    both: '<strong>🔄 途中で働き方が変わった方へ</strong><br>会社員・専業主婦・自営業など、複数の期間がある方はこちらを選んでください。<br><br>📱 <strong>マイナポータルに表示されている数字をそのまま使えばOK</strong>です。<br>・「国民年金 納付月数」＝ 自営業・専業主婦・学生期間など<br>・「厚生年金 納付月数」＝ 会社員・公務員として働いた期間<br><br>💡 <strong>専業主婦（第3号被保険者）の期間も国民年金に自動カウント</strong>されているので、特別な計算は不要です。'
+  };
+  document.getElementById('type-hint').innerHTML = hints[t] || hints.company;
+  // 国民年金ヒントの表示切替
+  const nenkinHint = document.getElementById('nenkin-hint');
+  if (nenkinHint) nenkinHint.style.display = t === 'self' ? 'block' : 'block';
   update();
 }
 
@@ -442,11 +692,54 @@ function update() {
   const life = +document.getElementById('life-age-slider').value;
 
   // labels
-  document.getElementById('nenkin-years-label').textContent = nenkin + '年';
-  document.getElementById('nenkin-pct').textContent = nenkin >= 40 ? '✅ 満額' : `満額の${Math.round(nenkin/40*100)}%`;
+  document.getElementById('nenkin-years-label').textContent = nenkin + 'ヶ月';
+  document.getElementById('kousei-years-label').textContent = kousei + 'ヶ月';
+  // ステッパー表示値を同期
+  const stepUnits = {'nenkin-years':'ヶ月','avg-salary':'万円','kousei-years':'ヶ月','current-age':'歳','retire-age':'歳','start-age':'歳'};
+  Object.entries(stepUnits).forEach(([id, unit]) => {
+    const sv = document.getElementById(id + '-stepval');
+    const sl = document.getElementById(id);
+    if (sv && sl) sv.textContent = sl.value + unit;
+  });
+
+  // 将来予測の計算
+  const currentAge = +document.getElementById('current-age').value;
+  const retireAge = +document.getElementById('retire-age').value;
+  document.getElementById('current-age-label').textContent = currentAge + '歳';
+  document.getElementById('retire-age-label').textContent = retireAge + '歳';
+
+  // 退職までの残り月数（退職年齢>現在年齢の場合のみ）
+  const futureMonths = Math.max(0, (retireAge - currentAge) * 12);
+  // 将来の国民年金見込み（自営業の場合）
+  const futureNenkin = currentType === 'self' ? futureMonths : 0;
+  // 将来の厚生年金見込み（会社員・両方の場合）
+  const futureKousei = currentType !== 'self' ? futureMonths : 0;
+
+  // 合計月数（実績＋将来見込み、上限480）
+  const totalNenkin = nenkin + futureNenkin;
+  const totalKousei = kousei + futureKousei;
+  const totalKisoMonths = Math.min(totalNenkin + (currentType !== 'self' ? totalKousei : totalNenkin), 480);
+
+  // 現在実績のみの月数
+  const currentKisoMonths = Math.min(nenkin + (currentType !== 'self' ? kousei : 0), 480);
+
+  // 予測ボックスの更新
+  const fcBox = document.getElementById('forecast-box');
+  if (futureMonths > 0 && retireAge > currentAge) {
+    const addedKiso = Math.min(totalKisoMonths, 480) - currentKisoMonths;
+    const addedKousei = futureKousei;
+    fcBox.innerHTML = `
+      <strong>📊 将来の見込み（${currentAge}歳〜${retireAge}歳）</strong><br>
+      今後 <strong>${futureMonths}ヶ月（${retireAge - currentAge}年分）</strong> の加入が上乗せされます<br>
+      基礎年金：+${addedKiso}ヶ月 ${currentType !== 'self' ? `／ 厚生年金：+${addedKousei}ヶ月` : ''}
+    `;
+  } else {
+    fcBox.innerHTML = '⚠️ 退職予定年齢が現在の年齢以下のため、将来分は加算されません';
+  }
+
+  document.getElementById('nenkin-pct').textContent = totalKisoMonths >= 480 ? '合計480ヶ月 ✅ 満額' : `合計${totalKisoMonths}ヶ月（満額の${Math.round(totalKisoMonths / 480 * 100)}%）`;
   document.getElementById('salary-label').textContent = salary + '万円';
   document.getElementById('salary-badge').textContent = salaryBadge(salary);
-  document.getElementById('kousei-years-label').textContent = kousei + '年';
   document.getElementById('start-age-label').textContent = sa + '歳';
 
   // quick btn highlight
@@ -460,8 +753,10 @@ function update() {
   else { note.textContent = ''; }
 
   // calc
-  const basicAnnual = Math.round(795000 * nenkin / 40);
-  const kouseiAnnual = currentType === 'self' ? 0 : Math.round(salary * 10000 * 5.481 / 1000 * kousei * 12);
+  // 基礎年金 = 831,700 × (国民年金月数 + 厚生年金月数) ÷ 480（上限480ヶ月、将来分含む）
+  const basicAnnual = Math.round(831700 * totalKisoMonths / 480);
+  // 厚生年金 = 平均月収 × 5.481/1000 × 厚生年金月数（将来分含む）
+  const kouseiAnnual = currentType === 'self' ? 0 : Math.round(salary * 10000 * 5.481 / 1000 * totalKousei);
   const base65Annual = basicAnnual + kouseiAnnual;
   const base65Monthly = Math.round(base65Annual / 12);
 
@@ -557,15 +852,15 @@ function update() {
 function drawGraph(selectedSa, life, base65Annual) {
   const svg = document.getElementById('graph-svg');
   const graphW = 540, graphH = 220;
-  const padL = 58, padR = 20, padT = 28, padB = 40;
+  const padL = 58, padR = 20, padT = 20, padB = 40;
   const innerW = graphW - padL - padR;
   const innerH = graphH - padT - padB;
   const ages = Array.from({length: 61}, (_, i) => 60 + i);
 
   const lineConfigs = [
-    {sa:60, color:'#FF9F40', label:'60歳繰上げ', dash:'6,3'},
+    {sa:60, color:'#2980B9', label:'60歳繰上げ', dash:'6,3'},
     {sa:65, color:'#FF6B00', label:'65歳（基準）', dash:''},
-    {sa:70, color:'#C0392B', label:'70歳繰下げ', dash:''},
+    {sa:70, color:'#27AE60', label:'70歳繰下げ', dash:''},
   ];
   if (![60,65,70].includes(selectedSa)) {
     lineConfigs.push({sa:selectedSa, color:'#9B59B6', label:`${selectedSa}歳（選択中）`, dash:''});
@@ -582,7 +877,7 @@ function drawGraph(selectedSa, life, base65Annual) {
     const lifeI = ages.indexOf(life);
     return lifeI >= 0 ? vals[lifeI] : 0;
   });
-  const maxVal = Math.max(...lifeValsByLine, 1);
+  const maxVal = Math.ceil(Math.max(...lifeValsByLine, 1) * 1.5 / 100) * 100; // 30%余白でキリのいい数値に
 
   const xPos = (i) => padL + (i / (ages.length - 1)) * innerW;
   const yPos = (v) => padT + innerH - (v / maxVal) * innerH;
@@ -614,21 +909,60 @@ function drawGraph(selectedSa, life, base65Annual) {
   lineConfigs.forEach(cfg => {
     const vals = getVals(cfg.sa);
     const pts = vals.map((v,i) => `${xPos(i)},${yPos(v)}`).join(' ');
-    const opacity = cfg.sa === selectedSa ? 1 : 0.3;
-    const sw = cfg.sa === selectedSa ? 3 : 1.5;
+    const opacity = cfg.sa === selectedSa ? 1 : 0.5;
+    const sw = cfg.sa === selectedSa ? 4 : 2.5;
     html += `<polyline points="${pts}" fill="none" stroke="${cfg.color}" stroke-width="${sw}" stroke-dasharray="${cfg.dash}" opacity="${opacity}"/>`;
   });
 
-  // legend (first 3 only)
-  lineConfigs.slice(0,3).forEach((cfg, i) => {
-    const x = padL + i * 148;
-    html += `<g transform="translate(${x},${padT-16})">`;
-    html += `<line x1="0" x2="18" y1="0" y2="0" stroke="${cfg.color}" stroke-width="2" stroke-dasharray="${cfg.dash}"/>`;
-    html += `<text x="22" y="4" font-size="10" fill="#1A1A1A">${cfg.label}</text>`;
-    html += `</g>`;
-  });
+  // legend: HTMLで描画
+  const legendEl = document.getElementById('graph-legend');
+  legendEl.innerHTML = lineConfigs.slice(0,3).map(cfg => {
+    const dash = cfg.dash ? 'repeating-linear-gradient(to right,' + cfg.color + ' 0,'+cfg.color+' 6px,transparent 6px,transparent 10px)' : 'none';
+    const bg = cfg.dash ? 'none' : cfg.color;
+    return `<div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#1A1A1A;">
+      <div style="width:22px;height:3px;background:${bg};background-image:${dash};border-radius:2px;flex-shrink:0;"></div>
+      <span>${cfg.label}</span>
+    </div>`;
+  }).join('');
 
   svg.innerHTML = html;
+}
+
+// ステッパー制御
+let stepInterval = null;
+let stepTimeout = null;
+
+function doStep(id, delta) {
+  const slider = document.getElementById(id);
+  const min = +slider.min, max = +slider.max;
+  const newVal = Math.min(max, Math.max(min, +slider.value + delta));
+  slider.value = newVal;
+  updateSliderFill(slider);
+  update();
+}
+
+function startStep(id, delta) {
+  doStep(id, delta);
+  stepTimeout = setTimeout(() => {
+    stepInterval = setInterval(() => doStep(id, delta), 80);
+  }, 400);
+}
+
+function stopStep() {
+  clearTimeout(stepTimeout);
+  clearInterval(stepInterval);
+  stepTimeout = null;
+  stepInterval = null;
+}
+
+
+
+// 使い方トグル
+function toggleHowto() {
+  const body = document.getElementById('howto-body');
+  const arrow = document.getElementById('howto-arrow');
+  body.classList.toggle('open');
+  arrow.classList.toggle('open');
 }
 
 // life age helper
@@ -644,7 +978,15 @@ function updateSliderFill(slider) {
   const max = +slider.max || 100;
   const val = +slider.value;
   const pct = Math.round((val - min) / (max - min) * 100);
+  // webkit: thumbより下のtrackをグラデーションで着色
+  slider.style.setProperty('--pct', pct + '%');
+  // Firefoxはmoz-range-progressがあるのでbackgroundは不要
+  // webkit用: linear-gradientをbackgroundに設定（track自体はCSS上でtransparent）
   slider.style.background = `linear-gradient(to right, #FF6B00 0%, #FF6B00 ${pct}%, #E0E0E0 ${pct}%, #E0E0E0 100%)`;
+  // ただしheight:40pxなのでgradientの位置をtrackに合わせる
+  slider.style.backgroundSize = '100% 8px';
+  slider.style.backgroundRepeat = 'no-repeat';
+  slider.style.backgroundPosition = 'center';
 }
 
 function updateAllSliders() {
